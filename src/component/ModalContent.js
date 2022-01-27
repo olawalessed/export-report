@@ -89,6 +89,7 @@ function ModalContent(props) {
               className="form-input"
               value={exportData.report_name}
               onChange={handleInputChange}
+              placeholder="Shareable report"
             />
           </div>
 
@@ -118,11 +119,12 @@ function ModalContent(props) {
           <div className="radio-group">
             <label>E-mail to</label>
             <input
-              type="text"
+              type="email"
               name="recipient"
               className="form-input"
               value={exportData.recipient}
               onChange={handleInputChange}
+              placeholder="client@company.com"
             />
           </div>
 
