@@ -1,56 +1,42 @@
 import {
   Box,
   Button,
-  FormControl,
   FormControlLabel,
   Radio,
   RadioGroup,
-  TextField,
 } from "@mui/material";
 import axios from "axios";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
-import { useReducer } from "react";
 import loadingGif from "../assets/loading.gif";
 
-
-
 function ModalContent(props) {
-  
-  
   const [exportData, setExportData] = useState({
     report_name: "",
     format: "",
     recipient: "",
-    schedule: ""
-  })
+    schedule: "",
+  });
 
   const [option, setOption] = useState(null);
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSwitchOption = (data) => {
     setOption(data);
   };
 
-
-
   // handle input change
   const handleInputChange = (e) => {
-
-    const { name, value } = e.target
-      setExportData({...exportData, [name]: value})
-    console.log(name, value)
-  }
-
+    const { name, value } = e.target;
+    setExportData({ ...exportData, [name]: value });
+    console.log(name, value);
+  };
 
   // submit form
 
   const handleSubmitForm = async () => {
-    const { report_name, format, recipient, schedule } = exportData
-
+    const { report_name, format, recipient, schedule } = exportData;
 
     // const formData = new FormData()
 
@@ -58,34 +44,37 @@ function ModalContent(props) {
     // formData.append("format", format)
     // formData.append("recipient", recipient)
     // formData.append("schedule", schedule)
-      
 
+    try {
+      setError(false);
+      setLoading(true);
 
-      try {
-        setLoading(true)
+      const response = await axios.post("https://postman-echo.com/post", {
+        report_name: report_name,
+        format: format,
+        recipient: recipient,
+        schedule: schedule,
+      });
 
-       const response = await axios.post("https://postman-echo.com/post", {
-         report_name: report_name,
-         format: format,
-         recipient: recipient,
-         schedule: schedule,
-       });
-          
-        if (response.status === 200) {
-          console.log(response.data)
-          setLoading(false)
-          props.closeModal()
-        }
-      
-
-      } catch (err) {
-        setLoading(false)
-        console.log(err)
+      if (response.status === 200) {
+        console.log(response.data);
+        setLoading(false);
+        props.closeModal();
+        props.setOpenSnackBar(true);
       }
-  }
+    } catch (err) {
+      setLoading(false);
+      setError(true);
+      console.log(err);
+    }
+    setError(false);
+  };
 
-
-
+  useEffect(() => {
+    return () => {
+      console.log("clean up");
+    };
+  }, []);
 
   return (
     <div className="form-body">
@@ -219,7 +208,7 @@ function ModalContent(props) {
                 variant="outlined"
                 onClick={handleSubmitForm}
               >
-                Ok {loading && <span>Loading...</span>}
+                {loading ? <span>Processing...</span> : <span>Ok</span>}
               </Button>
             </Box>
           </Box>
@@ -231,9 +220,7 @@ function ModalContent(props) {
 
 export default ModalContent;
 
-
-
-// Extra components. 
+// Extra components.
 // @TOdo: Move to the seperate component
 
 const SpecificDate = () => {
@@ -254,8 +241,7 @@ const Daily = () => {
     <div className="radio-group">
       <label>Every</label>
       <Box sx={{ display: "flex" }}>
-        
-      <input type="time" className="input-time" />
+        <input type="time" className="input-time" />
       </Box>
     </div>
   );

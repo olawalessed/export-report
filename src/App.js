@@ -2,7 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import ModalContent from './component/ModalContent';
 import { useState } from 'react';
-import { Box, Modal } from '@mui/material';
+import { Box, Modal, Snackbar, Alert } from '@mui/material';
 
 const styleOne = {
   position: "absolute",
@@ -21,16 +21,44 @@ const styleOne = {
 
 function App() {
 
+
+  // Modal state and methods
   const [openModal, setOpenModal] = useState(false)
 
-
   const handleOpenModal = () => { setOpenModal(true) }
-  const closeModal = () => {setOpenModal(false)}
+  const closeModal = () => { setOpenModal(false) }
+  
 
+  // Snackbar methods here
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+
+  const handleClickSnackBar = () => {
+    setOpenSnackBar(true);
+  };
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSnackBar(false);
+  };
 
   return (
     <div className="App">
-      <button onClick={handleOpenModal} style={{paddingBlock: "10px", paddingInline: "20px", backgroundColor: "black", color: "white", border: "none", fontSize: "25px"}} >Export Report</button>
+      <button
+        onClick={handleOpenModal}
+        style={{
+          paddingBlock: "10px",
+          paddingInline: "20px",
+          backgroundColor: "black",
+          color: "white",
+          border: "none",
+          fontSize: "25px",
+        }}
+      >
+        Export Report
+      </button>
 
       <Modal open={openModal} onClose={closeModal}>
         <Box sx={styleOne}>
@@ -44,11 +72,16 @@ function App() {
           >
             <h3>Export Report</h3>
           </div>
-          <Box sx={{marginBottom: "40px" }}>
-            <ModalContent closeModal={closeModal} />
+          <Box sx={{ marginBottom: "40px" }}>
+            <ModalContent closeModal={closeModal} setOpenSnackBar={() => setOpenSnackBar(true)} />
           </Box>
         </Box>
       </Modal>
+      <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleCloseSnackBar}>
+        <Alert onClose={handleCloseSnackBar} severity="success" sx={{ width: "100%" }}>
+          Data successfully exported!
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
